@@ -1,6 +1,3 @@
-日付の数字の後に「日」を付けるようにするには、`updateCalendar`関数内で日付を設定する部分を変更します。以下のように修正してください：
-
-```javascript
 document.addEventListener('DOMContentLoaded', () => {
     const monthYearElement = document.getElementById('monthYear');
     const calendarBody = document.querySelector('#calendar tbody');
@@ -28,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 row = document.createElement('tr');
             }
             const cell = document.createElement('td');
-            cell.textContent = `${day}日`; // 日付の数字の後に「日」を追加
+            cell.textContent = day;
             cell.addEventListener('click', () => {
                 const utterance = new SpeechSynthesisUtterance(day.toString());
                 utterance.lang = 'zh-CN';
@@ -77,4 +74,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   
     updateCalendar(currentYear, currentMonth);
-});
+  });
