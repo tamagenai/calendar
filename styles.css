@@ -37,8 +37,10 @@ body {
     padding: 10px;
     border: 1px solid #ddd;
   }
-  th:first-child, td:first-child {
-    background-color: red;
+  
+th:first-child, td:first-child {
+  background-color: lightblue;
+  color: red;
 }
   
   button {
