@@ -1,68 +1,77 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const calendar = document.getElementById('calendar').getElementsByTagName('tbody')[0];
-    const monthYear = document.getElementById('monthYear');
-    const prevMonth = document.getElementById('prevMonth');
-    const nextMonth = document.getElementById('nextMonth');
-    const eventForm = document.getElementById('eventForm');
-    const events = {};
-
-    let currentYear = new Date().getFullYear();
+document.addEventListener('DOMContentLoaded', () => {
+    const monthYearElement = document.getElementById('monthYear');
+    const calendarBody = document.querySelector('#calendar tbody');
+    const prevMonthButton = document.getElementById('prevMonth');
+    const nextMonthButton = document.getElementById('nextMonth');
+  
+    let currentYear = 2024;
     let currentMonth = new Date().getMonth();
-
-    function generateCalendar(year, month) {
-        calendar.innerHTML = '';
+  
+    function updateCalendar(year, month) {
         const firstDay = new Date(year, month, 1).getDay();
-        const lastDate = new Date(year, month + 1, 0).getDate();
-        monthYear.textContent = `${year}年 ${month + 1}月`;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+        monthYearElement.textContent = `${year}年 ${month + 1}月`;
+  
+        calendarBody.innerHTML = '';
         let row = document.createElement('tr');
         for (let i = 0; i < firstDay; i++) {
             row.appendChild(document.createElement('td'));
         }
-        for (let date = 1; date <= lastDate; date++) {
+  
+        for (let day = 1; day <= daysInMonth; day++) {
             if (row.children.length === 7) {
-                calendar.appendChild(row);
+                calendarBody.appendChild(row);
                 row = document.createElement('tr');
             }
             const cell = document.createElement('td');
-            cell.textContent = date;
-            const eventKey = `${year}-${month + 1}-${date}`;
-            if (events[eventKey]) {
-                const eventDiv = document.createElement('div');
-                eventDiv.textContent = events[eventKey];
-                cell.appendChild(eventDiv);
-            }
+            cell.textContent = day;
+            cell.addEventListener('click', () => {
+                const utterance = new SpeechSynthesisUtterance(day.toString());
+                utterance.lang = 'zh-CN';
+                speechSynthesis.speak(utterance);
+            });
             row.appendChild(cell);
         }
-        calendar.appendChild(row);
+  
+        if (row.children.length > 0) {
+            calendarBody.appendChild(row);
+        }
     }
-
-    function addEvent(event) {
-        event.preventDefault();
-        const date = new Date(eventForm.eventDate.value);
-        const time = eventForm.eventTime.value;
-        const description = eventForm.eventDescription.value;
-        const eventKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-        events[eventKey] = `${time} - ${description}`;
-        generateCalendar(currentYear, currentMonth);
-    }
-
-    eventForm.addEventListener('submit', addEvent);
-    prevMonth.addEventListener('click', () => {
+  
+    prevMonthButton.addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
             currentMonth = 11;
             currentYear--;
         }
-        generateCalendar(currentYear, currentMonth);
+        updateCalendar(currentYear, currentMonth);
     });
-    nextMonth.addEventListener('click', () => {
+  
+    nextMonthButton.addEventListener('click', () => {
         currentMonth++;
         if (currentMonth > 11) {
             currentMonth = 0;
             currentYear++;
         }
-        generateCalendar(currentYear, currentMonth);
+        updateCalendar(currentYear, currentMonth);
     });
-
-    generateCalendar(currentYear, currentMonth);
-});
+  
+    // 年月をクリックしたときに音声を再生するイベントリスナーを追加
+    monthYearElement.addEventListener('click', () => {
+        const utterance = new SpeechSynthesisUtterance(monthYearElement.textContent);
+        utterance.lang = 'zh-CN';
+        speechSynthesis.speak(utterance);
+    });
+  
+    // 曜日をクリックしたときに音声を再生するイベントリスナーを追加
+    document.querySelectorAll('#calendar th').forEach(th => {
+        th.addEventListener('click', () => {
+            const utterance = new SpeechSynthesisUtterance(th.textContent);
+            utterance.lang = 'zh-CN';
+            speechSynthesis.speak(utterance);
+        });
+    });
+  
+    updateCalendar(currentYear, currentMonth);
+  });
